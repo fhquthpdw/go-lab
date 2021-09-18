@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,19 +8,22 @@ import (
 
 ///////////////////////////////////
 // 如何避免出现连续的 if err := f(); err != nil {} 的语句
-// 这样做的问题是，f1,f2,f3,f4 不管哪个出了一个 error 都会把 4 个 func 都执行一遍
-func f(p person) {
+func f(p person) error {
 	var err error
-	checkErr := func(func() error) {
+	checkErr := func(f func() error) {
+		// 任何一个 check 出错后，后面的 check 就不会再检查
 		if err != nil {
-			fmt.Println(err.Error())
+			return
 		}
+		err = f()
 	}
 
 	checkErr(p.f1)
 	checkErr(p.f2)
 	checkErr(p.f3)
 	checkErr(p.f4)
+
+	return err
 }
 
 type person struct {
@@ -41,13 +43,13 @@ func (p person) f4() error { return nil }
 // 我们在处理 api 请求的时候，场影是这样：
 // 一个请求过来，我需要做一系列的错误或者业务的检查，如果有任何一项检查出现了错误，我就马上 http response 给上游
 // 这里以 Gin 框加为例，我们是如何处理这个错误的
-type ginHandler func(c *gin.Context)
 type ginHandlerWithErr func(c *gin.Context) error
 
 func httpServer() {
 	r := gin.Default()
 
-	r.POST("/data/get/list", handler(dataList))
+	r.POST("/data/get/list1", handler(dataList1))
+	r.POST("/data/get/list2", handler(dataList2))
 }
 
 func handler(h ginHandlerWithErr) func(c *gin.Context) {
@@ -59,22 +61,41 @@ func handler(h ginHandlerWithErr) func(c *gin.Context) {
 	}
 }
 
-func dataList(c *gin.Context) error {
-	if err := check1(); err != nil {
+// 一般都会这么写
+func dataList1(c *gin.Context) (err error) {
+	if err = check1(); err != nil {
 		return err
 	}
-	if err := check2(); err != nil {
+	if err = check2(); err != nil {
 		return err
 	}
-	if err := check3(); err != nil {
+	if err = check3(); err != nil {
 		return err
 	}
-	if err := check4(); err != nil {
+	if err = check4(); err != nil {
 		return err
 	}
 
 	c.JSON(http.StatusOK, "Done")
 	return nil
+}
+
+// 还可以这么写
+func dataList2(c *gin.Context) (err error) {
+	checkErr := func(f func() error) {
+		if err != nil {
+			return
+		}
+		err = f()
+	}
+
+	checkErr(check1)
+	checkErr(check2)
+	checkErr(check3)
+	checkErr(check4)
+
+	c.JSON(http.StatusOK, "Done")
+	return
 }
 
 func check1() error { return nil }

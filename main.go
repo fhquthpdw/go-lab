@@ -2,20 +2,31 @@ package main
 
 import "fmt"
 
-// 如何避免出现连续的 if err := f(); err != nil {} 的语句
-type person struct {
-	Age1 int
-	Age2 int
-	Age3 int
-	Age4 int
-	Age5 int
+func main() {
+	all := map[int64][]int64{
+		1:  {2, 3, 4},
+		5:  {6, 7, 8},
+		4:  {9, 10, 11},
+		7:  {12, 13, 14},
+		11: {15, 16, 17},
+		17: {18, 19},
+		19: {20, 21},
+		21: {22},
+	}
+
+	o := getChildRoles2([]int64{1, 5}, all)
+	fmt.Println(o)
 }
 
-func f(p person) {
-	var err error
-	checkErr := func() {
-		if err != nil {
-			fmt.Println(err.Error())
+func getChildRoles2(mainIds []int64, mainChildArr map[int64][]int64) (childRoleIdArr []int64) {
+	for _, mainId := range mainIds {
+		childRoleIdArr = append(childRoleIdArr, mainId)
+		roleIdArr, ok := mainChildArr[mainId]
+		if !ok {
+			continue
 		}
+
+		childRoleIdArr = append(childRoleIdArr, getChildRoles2(roleIdArr, mainChildArr)...)
 	}
+	return
 }
