@@ -1,32 +1,39 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"os"
+)
 
 func main() {
-	all := map[int64][]int64{
-		1:  {2, 3, 4},
-		5:  {6, 7, 8},
-		4:  {9, 10, 11},
-		7:  {12, 13, 14},
-		11: {15, 16, 17},
-		17: {18, 19},
-		19: {20, 21},
-		21: {22},
+	ips, err := net.LookupIP("iherb.okta.com")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
+		os.Exit(1)
 	}
-
-	o := getChildRoles2([]int64{1, 5}, all)
-	fmt.Println(o)
-}
-
-func getChildRoles2(mainIds []int64, mainChildArr map[int64][]int64) (childRoleIdArr []int64) {
-	for _, mainId := range mainIds {
-		childRoleIdArr = append(childRoleIdArr, mainId)
-		roleIdArr, ok := mainChildArr[mainId]
-		if !ok {
-			continue
-		}
-
-		childRoleIdArr = append(childRoleIdArr, getChildRoles2(roleIdArr, mainChildArr)...)
+	for _, ip := range ips {
+		fmt.Printf("iherb.okta.com IN A %s\n", ip.String())
 	}
 	return
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://iherb.okta.com/oauth2/aus1iqzmrvfNssQO10h8/.well-known/openid-configuration", nil)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+
+	fmt.Println(body)
 }
