@@ -1,33 +1,48 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
-type S1 struct {
-	Name string `json:"name"`
+type Phone interface {
+	Call()
+	SendMsg(s string) bool
 }
 
-func (s S1) PrintName() {
-	fmt.Println(s.Name)
+type Android struct {
+	Name string
 }
 
-type S2 struct {
-	S1
-	//Name []string `json:"name"`
+func (a Android) Call() {
+	fmt.Println("call")
+}
+func (a Android) SendMsg(s string) bool {
+	fmt.Println(s)
+	return true
+}
+
+type Ios struct{}
+
+func (a Ios) Call() {
+	fmt.Println("call")
+}
+func (a Ios) SendMsg(s string) bool {
+	fmt.Println(s)
+	return true
 }
 
 func main() {
-	s1 := S1{Name: "name of s1"}
-	s2 := S2{
-		S1: s1,
-	}
+	var p Phone = Android{}
 
-	s2.PrintName()
-	s2.Name = "name of s3"
+	v := reflect.ValueOf(p)
+	fmt.Println(v.Kind())
+	fmt.Println(v.String())
+	fmt.Println(v.Elem())
+	fmt.Println()
 
-	s, _ := json.Marshal(s2)
-
-	fmt.Println(string(s))
+	//
+	t := reflect.TypeOf(p)
+	fmt.Println(t.Kind())
+	fmt.Println(t.String())
 }
