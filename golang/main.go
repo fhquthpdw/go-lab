@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 type Phone interface {
@@ -33,16 +32,30 @@ func (a Ios) SendMsg(s string) bool {
 }
 
 func main() {
-	var p Phone = Android{}
+	str := "hello"
+	fmt.Println(len(str))
+	for _, v := range str {
+		fmt.Println(string(v))
+	}
 
-	v := reflect.ValueOf(p)
-	fmt.Println(v.Kind())
-	fmt.Println(v.String())
-	fmt.Println(v.Elem())
-	fmt.Println()
+	/*
+		k := []int{1, 2, 3, 4, 5}
+		i := 4
 
-	//
-	t := reflect.TypeOf(p)
-	fmt.Println(t.Kind())
-	fmt.Println(t.String())
+		copy(k[i:], k[i+1:])
+		k = k[:len(k)-1]
+		fmt.Println(k)
+
+		x := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+		for idx := 0; idx < len(x); idx++ {
+			if x[idx]%3 == 0 {
+				copy(x[idx:], x[idx+1:])
+				x = x[:len(x)-1]
+			}
+			if idx+1 > len(x) {
+				break
+			}
+		}
+		fmt.Println(x)
+	*/
 }
