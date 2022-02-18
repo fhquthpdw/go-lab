@@ -163,10 +163,10 @@ func (a Account) doTransfer(c *gin.Context, reqBody []byte) {
 		return
 	}
 
-	// origin info
+	// dest info
 	destInfo := modelIns.Get(dto.Destination)
 	if destInfo == nil {
-		destInfo, err = modelIns.Create(dto.Destination, dto.Amount)
+		destInfo, err = modelIns.Create(dto.Destination, 0)
 	}
 
 	originInfo, destInfo, err = modelIns.Transfer(originInfo, destInfo, dto.Amount)

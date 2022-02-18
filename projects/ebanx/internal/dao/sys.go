@@ -15,6 +15,7 @@ func NewSysDao() SysDao {
 func (s SysDao) Reset() {
 	accountDao := NewAccountDao()
 	accountList := accountDao.List()
+
 	for k, _ := range accountList {
 		s.db.Delete(k)
 	}
