@@ -1,6 +1,7 @@
 package api
 
 import (
+	"ebanx/internal/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,5 +11,6 @@ type Sys struct {
 }
 
 func (c Sys) Reset(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, "OK")
+	model.NewSysModel().Reset()
+	ctx.String(http.StatusOK, "OK")
 }

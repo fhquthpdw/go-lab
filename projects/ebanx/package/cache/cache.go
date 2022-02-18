@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// init a cache instance
 func NewCache(gcDuration int) *Cache {
 	c := &Cache{
 		items:      make(map[string]*CacheItem),
@@ -16,14 +15,12 @@ func NewCache(gcDuration int) *Cache {
 	return c
 }
 
-// Cache value item
 type CacheItem struct {
 	val       interface{}
 	createdAt time.Time
 	life      time.Duration // zero means always live
 }
 
-// check is expired
 func (i *CacheItem) isExpire() bool {
 	if i.life == 0 {
 		return false
@@ -31,15 +28,12 @@ func (i *CacheItem) isExpire() bool {
 	return time.Now().Sub(i.createdAt) > i.life
 }
 
-// Cache
 type Cache struct {
 	sync.RWMutex
 	items      map[string]*CacheItem
 	gcDuration int
 }
 
-// get cache value
-// return nil if expired or not exists
 func (c *Cache) Get(key string) interface{} {
 	c.RLock()
 	defer c.RUnlock()
@@ -51,19 +45,17 @@ func (c *Cache) Get(key string) interface{} {
 	return nil
 }
 
-// set cache value
 func (c *Cache) Set(key string, value interface{}, life time.Duration) error {
 	c.Lock()
 	defer c.Unlock()
 	c.items[key] = &CacheItem{
 		val:       value,
 		createdAt: time.Now(),
-		life:      time.Duration(life) * time.Second,
+		life:      life * time.Second,
 	}
 	return nil
 }
 
-// delete cache value
 func (c *Cache) Delete(key string) error {
 	c.Lock()
 	defer c.Unlock()
@@ -74,12 +66,14 @@ func (c *Cache) Delete(key string) error {
 	return nil
 }
 
-// get all cache items
-func (c *Cache) Items() map[string]*CacheItem {
-	return c.items
+func (c *Cache) List() map[string]interface{} {
+	r := make(map[string]interface{})
+	for k, v := range c.items {
+		r[k] = v.val
+	}
+	return r
 }
 
-// get all expired keys for GC
 func (c *Cache) GetExpiredKeys() (keys []string) {
 	c.RLock()
 	defer c.RUnlock()
@@ -91,7 +85,6 @@ func (c *Cache) GetExpiredKeys() (keys []string) {
 	return keys
 }
 
-// delete all expired keys for GC
 func (c *Cache) DeleteExpired(keys []string) {
 	c.Lock()
 	defer c.Unlock()
@@ -100,8 +93,11 @@ func (c *Cache) DeleteExpired(keys []string) {
 	}
 }
 
-// GC every body knows
 func (c *Cache) GC() {
+	if c.gcDuration == 0 {
+		return
+	}
+
 	for {
 		select {
 		case <-time.After(time.Duration(c.gcDuration) * time.Second):
@@ -110,7 +106,6 @@ func (c *Cache) GC() {
 					c.Delete(key)
 				}
 			}
-			//fmt.Println("GC")
 		}
 	}
 }
