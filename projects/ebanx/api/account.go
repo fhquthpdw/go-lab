@@ -28,7 +28,10 @@ type eventFunc func(*gin.Context, []byte)
 func (a Account) Event(c *gin.Context) {
 	bodyByte, _ := ioutil.ReadAll(c.Request.Body)
 	eType := eventType{}
-	_ = json.Unmarshal(bodyByte, &eType)
+	if err := json.Unmarshal(bodyByte, &eType); err != nil {
+		c.String(http.StatusInternalServerError, "invalid request body")
+		return
+	}
 
 	eFuncMap := map[string]eventFunc{
 		EventDeposit:  a.doDeposit,
@@ -73,7 +76,10 @@ func (d depositResponse) ToStr() string {
 func (a Account) doDeposit(c *gin.Context, reqBody []byte) {
 	var err error
 	dto := depositDto{}
-	_ = json.Unmarshal(reqBody, &dto)
+	if err = json.Unmarshal(reqBody, &dto); err != nil {
+		c.String(http.StatusInternalServerError, "invalid request body")
+		return
+	}
 
 	modelIns := model.NewAccountModel()
 	info := modelIns.Get(dto.Destination)
@@ -112,7 +118,10 @@ func (d withdrawResponse) ToStr() string {
 func (a Account) doWithdraw(c *gin.Context, reqBody []byte) {
 	var err error
 	dto := withdrawDto{}
-	_ = json.Unmarshal(reqBody, &dto)
+	if err = json.Unmarshal(reqBody, &dto); err != nil {
+		c.String(http.StatusInternalServerError, "invalid request body")
+		return
+	}
 
 	modelIns := model.NewAccountModel()
 	info := modelIns.Get(dto.Origin)
@@ -153,7 +162,10 @@ func (d transferResponse) ToStr() string {
 func (a Account) doTransfer(c *gin.Context, reqBody []byte) {
 	var err error
 	dto := transferDto{}
-	_ = json.Unmarshal(reqBody, &dto)
+	if err = json.Unmarshal(reqBody, &dto); err != nil {
+		c.String(http.StatusInternalServerError, "invalid request body")
+		return
+	}
 
 	modelIns := model.NewAccountModel()
 	// origin info

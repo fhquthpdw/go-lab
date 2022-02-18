@@ -4,3 +4,8 @@
   
 - Run
   - `go run main.go`
+
+# TODO
+- Add lock for prevent data race
+- Add more logging for debug
+- Add transactions for data safety
