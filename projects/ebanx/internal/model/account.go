@@ -1,6 +1,9 @@
 package model
 
-import "ebanx/internal/dao"
+import (
+	"ebanx/internal/dao"
+	"errors"
+)
 
 type AccountModel struct {
 	dao dao.AccountDao
@@ -30,6 +33,13 @@ func (a AccountModel) Deposit(account *dao.Account, amount int) (*dao.Account, e
 }
 
 func (a AccountModel) Withdraw(account *dao.Account, amount int) (*dao.Account, error) {
+	accountBalance := account.Balance
+	accountBalance -= amount
+
+	if accountBalance < -1000 {
+		return nil, errors.New("not enough credit")
+	}
+
 	account.Balance -= amount
 	return account, a.dao.Update(account.Id, *account)
 }
