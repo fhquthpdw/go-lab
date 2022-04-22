@@ -1,0 +1,58 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Dashboard {
+  Env: String!
+  OrderId: Int!
+  RequestId: Int!
+  CdType: String!
+  HelmPackage: String!
+  Cluster: String!
+  Namespace: String!
+  Application: String!
+  AppVersion: String!
+  ChartVersion: String!
+  ExpAppVersion: String!
+  Url: String!
+  Datetime: Int!
+  Status: String!
+}
+input DashboardQueryCondition {
+  Env: String
+  Keyword: String
+  CdType: String
+  Cluster: String
+  Namespace: String
+  StartDatetime: String
+  EndDatetime: String
+  Status: String
+  Page: Int
+  Pagesize: Int
+}
+
+type Todo {
+  id: ID!
+  text: String!
+  done: Boolean!
+  user: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+input NewTodo {
+  text: String!
+  userId: String!
+}
+
+type Query {
+  todos(count: Int): [Todo!]!
+  getDashboard(condition: DashboardQueryCondition): [Dashboard!]!
+}
+
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+}

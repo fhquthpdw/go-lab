@@ -1,0 +1,53 @@
+syntax = "proto3";
+package stat;
+
+option go_package = ".;stat";
+
+service StatService {
+  rpc Add(Stat) returns (AddReturn) {}
+  rpc BatchAdd(stream Stat) returns (stream Stat) {}
+  rpc BatchAddWithSummary(stream Stat) returns (BatchAddSummary) {}
+  rpc Search(searchParameters) returns (searchResult) {}
+  rpc ListSearchData(searchParameters) returns (stream Stat) {}
+}
+
+message EmptyParameter {}
+message EmptyReturn {}
+
+message Stat {
+  enum Platform {
+    PC = 0;
+    iOS = 1;
+    Android = 2;
+    MOBILE = 3;
+  }
+  Platform platform = 3;
+  string account = 1;
+  string path = 5;
+  string action = 7;
+  int64 time = 9;
+}
+message AddReturn {
+  bool result = 1;
+  Stat data = 3;
+}
+
+message BatchAddSummary {
+  int32 total = 1;
+  int32 success = 3;
+  int32 failed = 5;
+}
+
+message StatList {
+  repeated Stat StatArray = 1;
+}
+
+message searchParameters {
+  string keyword = 1;
+  int32 page = 3;
+  int32 page_size = 5;
+}
+message searchResult {
+  int32 total = 1;
+  StatList data = 3;
+}
