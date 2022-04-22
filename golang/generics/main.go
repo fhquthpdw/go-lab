@@ -17,7 +17,7 @@ func main() {
 	fmt.Println(x)
 }
 
-func Sum[K comparable, V Number](m map[K]V) V {
+func Sum[K string | int, V Number](m map[K]V) V {
 	var r V
 	for _, val := range m {
 		r += val

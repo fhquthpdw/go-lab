@@ -1,8 +1,53 @@
 package main
 
+import (
+	"fmt"
+	"strconv"
+)
+
 func main() {
-	s := []int{1, 2, 3, 4, 5}
-	move(s)
+	var a t1 = 1
+	var b t2 = 64
+	fmt.Println(Join([]Stringer{a, b}))
+
+	var c myFloat = 1.11
+
+	P(c)
+	P(1)
+	P(1.2)
+}
+
+type myFloat float64
+
+type Ordered interface {
+	int | int64 | ~float64
+}
+
+func P[T Ordered](v T) {
+	fmt.Println(v)
+}
+
+type Stringer interface {
+	String() string
+}
+
+func Join[T Stringer](s []T) string {
+	r := ""
+	for _, v := range s {
+		r = fmt.Sprintf("%s, %s", r, v.String())
+	}
+	return r
+}
+
+type t1 int
+type t2 int64
+
+func (i t1) String() string {
+	return strconv.Itoa(int(i))
+}
+
+func (i t2) String() string {
+	return strconv.Itoa(int(i))
 }
 
 func move(arr []int) {
