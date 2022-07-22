@@ -1,6 +1,27 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
+// Main function
 func main() {
+	s := "/forbidden-city/tools"
+	f := strings.TrimPrefix(s, "/forbidden-city")
+	fmt.Println(f)
+
+	//a := "AZv1UNv?7[AR,?nF7EJu"
+	//b := url.QueryEscape(a)
+	//fmt.Println(b)
+	//
+	//_, ipa, _ := iplib.ParseCIDR("192.168.1.0/22")
+	//_, ipb, _ := iplib.ParseCIDR("92.168.1.0/22")
+	//_, ipc, _ := iplib.ParseCIDR("212.168.1.0/22")
+	//
+	//list := []iplib.Net{ipa, ipb, ipc}
+	//sort.Sort(iplib.ByNet(list)) // []iplib.Net{ ipna, ipnb, ipnc }
+	//fmt.Println(list)
 }
 
 /*

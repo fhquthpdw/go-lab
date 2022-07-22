@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
+	github.com/c-robinson/iplib v1.0.3 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/golang/protobuf v1.5.1 // indirect
 	github.com/google/gops v0.3.18 // indirect
