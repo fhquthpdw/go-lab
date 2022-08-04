@@ -1,15 +1,29 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"strings"
 )
+
+var exists = errors.New("exists")
+
+func ReturnErr() error {
+	return exists
+}
 
 // Main function
 func main() {
-	s := "/forbidden-city/tools"
-	f := strings.TrimPrefix(s, "/forbidden-city")
-	fmt.Println(f)
+	e := fmt.Errorf("get new error")
+	s := fmt.Errorf("error: %s", e)
+	fmt.Println(s)
+	fmt.Println("")
+
+	err := ReturnErr()
+	if errors.Is(err, exists) {
+		fmt.Println("same")
+	} else {
+		fmt.Println("not same")
+	}
 
 	//a := "AZv1UNv?7[AR,?nF7EJu"
 	//b := url.QueryEscape(a)
