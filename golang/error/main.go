@@ -98,6 +98,24 @@ func dataList2(c *gin.Context) (err error) {
 	return
 }
 
+// 这么写也行，适用的场景是需要执行的函数签名不统一
+func dataList3(c *gin.Context) (err error) {
+	checkErr := func(f func() error) {
+		if err != nil {
+			return
+		}
+		err = f()
+	}
+
+	checkErr(func() error { return check1() })
+	checkErr(func() error {
+		return check1()
+	})
+
+	c.JSON(http.StatusOK, "Done")
+	return
+}
+
 func check1() error { return nil }
 func check2() error { return nil }
 func check3() error { return nil }
