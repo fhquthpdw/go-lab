@@ -1,21 +1,42 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"os/exec"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
-	cmds := []*exec.Cmd{
-		exec.Command("ps", "a"),
-		exec.Command("grep", "signal"),
-		exec.Command("grep", "-v", "grep"),
-		exec.Command("grep", "-v", "go run"),
-		exec.Command("awk", "{print $2}"),
-	}
-	fmt.Println(cmds)
-}
+	var srv http.Server
 
-func runCmds(cmds []*exec.Cmd) error {
-	return nil
+	idleConnClosed := make(chan struct{})
+	go func() {
+		fmt.Println("Waiting signal-1...")
+		sig := make(chan os.Signal, 1)
+
+		signal.Notify(sig, os.Interrupt)
+		signal.Notify(sig, syscall.SIGTERM)
+
+		fmt.Println("Waiting signal-2...")
+		<-sig
+		fmt.Println("Waiting signal-3...")
+
+		if err := srv.Shutdown(context.Background()); err != nil {
+			fmt.Printf("HTTP server Shutdown: %v", err)
+		} else {
+			fmt.Printf("HTTP server gracefully Shutdown")
+		}
+		close(idleConnClosed)
+	}()
+
+	fmt.Println("Http serving...")
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		fmt.Printf("HTTP server ListenAndserver: %v", err)
+	}
+	fmt.Println("Ready to shutdown")
+
+	<-idleConnClosed
 }

@@ -9,24 +9,14 @@ import (
 // https://itnext.io/how-to-use-golang-generics-with-structs-8cabc9353d75
 func main() {
 	r := getCsvContent[Post](genPost())
-	fmt.Println("+-+-+-+-+-+- Post Start +-+-+-+-+-+")
-	fmt.Println(r[0].Id)
-	fmt.Println(r[0].Title)
-	fmt.Println(r[1].Id)
-	fmt.Println(r[1].Title)
-	fmt.Println("+-+-+-+-+-+- Post End +-+-+-+-+-+")
+	fmt.Printf("%#v\n", r)
 
 	r1 := getCsvContent[Category](genCategory())
-	fmt.Println("+-+-+-+-+-+- Category Start +-+-+-+-+-+")
-	fmt.Println(r1[0].Id)
-	fmt.Println(r1[0].Name)
-	fmt.Println(r1[1].Id)
-	fmt.Println(r1[1].Name)
-	fmt.Println("+-+-+-+-+-+- Category End +-+-+-+-+-+")
+	fmt.Printf("%#v", r1)
 
 	// category
 	category := Category{
-		Id:   1,
+		ID:   1,
 		Name: "name",
 	}
 	cc := NewCache[Category]()
@@ -34,7 +24,7 @@ func main() {
 
 	// post
 	post := Post{
-		Id:    1,
+		ID:    1,
 		Title: "title",
 	}
 	cp := NewCache[Post]()
@@ -42,18 +32,27 @@ func main() {
 }
 
 type Category struct {
-	Id   int
+	ID   int64
 	Name string
 }
 
+func (c Category) GetId() int64 {
+	return c.ID
+}
+
 type Post struct {
-	Id    int
+	ID    int64
 	Title string
+}
+
+func (c Post) GetId() int64 {
+	return c.ID
 }
 
 // dataAble limit cache data types
 type dataType interface {
 	Category | Post
+	GetId() int64
 }
 
 type Cache[T dataType] struct {
@@ -80,11 +79,6 @@ func NewCache[T dataType]() Cache[T] {
 }
 
 func getCsvContent[T dataType](dataSource []map[string]any) (r []T) {
-	//pArr := []map[string]any{
-	//	{"Id": 1, "Title": "title1"},
-	//	{"Id": 2, "Title": "title2"},
-	//}
-
 	for _, item := range dataSource {
 		p := new(T)
 		_ = mapstructure.Decode(item, p)
@@ -106,4 +100,13 @@ func genCategory() []map[string]any {
 		{"Id": 91, "Name": "name1"},
 		{"Id": 92, "Name": "name2"},
 	}
+}
+
+// IdMap 泛型应用
+func IdMap[T dataType](source []T) (r map[int64]T) {
+	for _, item := range source {
+		r[item.GetId()] = item
+	}
+
+	return
 }

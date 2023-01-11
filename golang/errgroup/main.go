@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,29 @@ import (
 
 	"golang.org/x/sync/errgroup"
 )
+
+func main() {
+	var c = make(chan int, 4)
+	<-c
+	fmt.Println("gogogo")
+
+	var g errgroup.Group
+
+	g.Go(func() error {
+		time.Sleep(3 * time.Second)
+		return errors.New("ggo1 error")
+	})
+
+	g.Go(func() error {
+		time.Sleep(15 * time.Second)
+		return errors.New("ggo2 error")
+	})
+
+	if err := g.Wait(); err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("all done")
+}
 
 func justError() {
 	var g errgroup.Group
@@ -22,7 +46,7 @@ func justError() {
 		g.Go(func() error {
 			resp, err := http.Get(url)
 			if err == nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 			}
 			return err
 		})
@@ -43,12 +67,12 @@ func errorWithContext() {
 			time.Sleep(2 * time.Second)
 			select {
 			case <-ctx.Done():
-				fmt.Println("Canceled:", i)
+				fmt.Println("canceled:", i)
 				return nil
 			default:
 				if i > 90 {
-					fmt.Println("Error:", i)
-					return fmt.Errorf("Error: %d", i)
+					fmt.Println("error:", i)
+					return fmt.Errorf("error: %d", i)
 				}
 				return nil
 			}
