@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/jinzhu/now"
@@ -34,8 +37,31 @@ func weekEnd(t time.Time) time.Time {
 	result := t.Add(time.Duration(offset*24) * time.Hour)
 	return result
 }
+func JsonEncode2String(obj interface{}) (string, error) {
+	if jsonByte, err := JsonEncode(obj); err != nil {
+		return "", err
+	} else {
+		return string(jsonByte), nil
+	}
+}
+
+// JsonEncode JSONEncode to []byte
+func JsonEncode(obj interface{}) (jsonByte []byte, err error) {
+	jsonByte, err = json.Marshal(obj)
+	if err != nil {
+		return jsonByte, errors.New("marshal failed")
+	}
+	return jsonByte, nil
+}
 
 func main() {
+	s1 := map[int64]string{1: "a", 2: "b", 4: "c"}
+	for idx := range s1 {
+		fmt.Println(idx)
+		panic("kakaka")
+	}
+	os.Exit(1)
+
 	var err error
 	erri := fmt.Errorf("error: %s", err.Error())
 	fmt.Println(erri)

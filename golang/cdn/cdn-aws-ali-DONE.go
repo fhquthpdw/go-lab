@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	FileName   = "/Users/cnDaoZha/Desktop/s3/t.png"
-	BucketName = "s3-cloudfront-poc"
+	FileName   = "t.png"
+	BucketName = "s3-cl"
 	ObjKey     = "t.png"
 )
 

@@ -1,0 +1,28 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: cdt-campaign-configurator-internet
+spec:
+  gateways:
+    - istio-system/internet-gw
+  hosts:
+    - campaign.dev.lego.cn
+  http:
+    - match:
+        - port: 80
+          uri:
+            prefix: /campaign-configurator
+        - port: 443
+          uri:
+            prefix: /campaign-configurator
+      rewrite:
+        uri: " "
+      retries: {}
+      route:
+        - destination:
+            host: cdt-campaign-configurator
+            port:
+              number: 80
+            subset: stable
+          weight: 100
