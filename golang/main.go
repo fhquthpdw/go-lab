@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,53 @@ import (
 
 	"github.com/jinzhu/now"
 )
+
+// //
+type Resource struct {
+	Group     string `json:"group"`
+	Kind      string `json:"kind"`
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+}
+type SeDevopsEks struct {
+	AppNamespace string     `json:"appNamespace"`
+	Name         string     `json:"name"`
+	Prune        bool       `json:"prune"`
+	Resources    []Resource `json:"resources"`
+}
+
+type T struct {
+	Id []struct{} `json:"id"`
+}
+
+// argocd API doc: https://argocd-se.shared.cdt.thelegogroup.cn/swagger-ui#operation/ApplicationService_Sync
+func main() {
+	var a []struct{}
+	xxx := T{
+		Id: a,
+	}
+	xv, _ := json.Marshal(xxx)
+	fmt.Println(string(xv))
+	os.Exit(1)
+
+	patchData := SeDevopsEks{
+		AppNamespace: "default",
+		Name:         "daochun-demo",
+		Prune:        false,
+		Resources: []Resource{
+			{
+				Kind:      "Secret",
+				Name:      "argocd-demo-secret",
+				Namespace: "argo-sbx",
+			},
+		},
+	}
+
+	s, _ := json.Marshal(patchData)
+	fmt.Println("=================")
+	fmt.Println(string(s))
+	fmt.Println("=================")
+}
 
 func biweeklyRange(t time.Time) (biweekKey string, start time.Time, end time.Time) {
 	year, week := t.ISOWeek()
@@ -54,31 +102,86 @@ func JsonEncode(obj interface{}) (jsonByte []byte, err error) {
 	return jsonByte, nil
 }
 
-func main() {
-	s1 := map[int64]string{1: "a", 2: "b", 4: "c"}
-	for idx := range s1 {
-		fmt.Println(idx)
-		panic("kakaka")
+func FibonacciNumber(n int) int {
+	if n == 0 || n == 1 {
+		return n
 	}
-	os.Exit(1)
+	return FibonacciNumber(n-1) + FibonacciNumber(n-2)
+}
 
-	var err error
-	erri := fmt.Errorf("error: %s", err.Error())
-	fmt.Println(erri)
-	log.Fatal("done")
+type xmlResponse struct {
+	XMLName xml.Name `xml:"response"`
+	Status  string   `xml:"status,attr"`
+	Result  struct {
+		XMLName xml.Name `xml:"result"`
+		Key     string   `xml:"key"`
+	} `xml:"result"`
+}
 
-	ch := make(chan int, 10)
-	ch <- 1
-	ch <- 2
-	ch <- 3
-	ch <- 4
+//var mx map[string]string
 
-	fmt.Println("chanel length: ", len(ch))
-	for {
-		if len(ch) == 0 {
-			break
+func mainx() {
+	// 输入的 UTC 时间字符串
+	utcTimeString := "2023-05-02T18:00:00.0+0000"
+	ff := "2006-01-02T15:04:05.9+0000"
+
+	// 解析 UTC 时间字符串为 time.Time 类型
+	utcTime, err := time.Parse(ff, utcTimeString)
+	if err != nil {
+		panic(err)
+	}
+
+	// 获取上海时区
+	loc, err := time.LoadLocation("Asia/Shanghai")
+	if err != nil {
+		panic(err)
+	}
+
+	// 将 UTC 时间转换为上海时间
+	shanghaiTime := utcTime.In(loc)
+	fmt.Println("*********************")
+	fmt.Println(shanghaiTime)
+	fmt.Println("*********************")
+
+	// 输出上海时间字符串
+	//fmt.Println(shanghaiTime.Format(ff))
+	fmt.Println("===============\r\n\r\n\r\n")
+	//
+	f := "2006-01-02T15:04:05.9+0000"
+	ts := "2023-05-02T16:00:00.0+0000"
+	//shanghaiLC, _ := time.LoadLocation("Asia/Shanghai")
+	shanghaiLC, _ := time.LoadLocation("UTC")
+	r, err := time.ParseInLocation(f, ts, shanghaiLC)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	fmt.Printf("============ %s ============", r)
+	//
+	//mx["a"] = "b"
+	log.Fatal("\r\n")
+
+	d := []byte(`<response status = 'success'><result><key>KeyKey</key></result></response>`)
+	var xmlResponse xmlResponse
+	if err := xml.Unmarshal(d, &xmlResponse); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(xmlResponse.Status)
+	fmt.Println(xmlResponse.Result.Key)
+
+	// <response status = 'success'><result><key>asdfasdf</key></result></response>
+
+	fmt.Println("==================")
+	log.Fatal("aaa")
+a:
+	for x := 0; x <= 10; x++ {
+		for i := 0; i <= 10; i++ {
+			fmt.Println(x, " => ", i)
+			if i == 3 {
+				break a
+			}
 		}
-		fmt.Println("value: ", <-ch)
+		fmt.Println(x)
 	}
 
 	log.Fatal("done")
