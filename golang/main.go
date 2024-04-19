@@ -6,13 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
+	"net/url"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/now"
 )
 
-// //
 type Resource struct {
 	Group     string `json:"group"`
 	Kind      string `json:"kind"`
@@ -30,8 +33,105 @@ type T struct {
 	Id []struct{} `json:"id"`
 }
 
+func branchMatch(branch string, pattern string) bool {
+	matched, _ := regexp.Match(pattern, []byte(branch))
+	return matched
+}
+func urlParameters(arg ...string) string {
+	query := url.Values{}
+	idx := 0
+	cnt := len(arg)
+	for {
+		if idx+1 > cnt {
+			break
+		}
+		k := arg[idx]
+		idx++
+
+		if idx+1 > cnt {
+			break
+		}
+		v := arg[idx]
+		idx++
+
+		if idx == 0 {
+			query.Set(k, v)
+			continue
+		}
+		query.Add(k, v)
+	}
+
+	return query.Encode()
+}
+
 // argocd API doc: https://argocd-se.shared.cdt.thelegogroup.cn/swagger-ui#operation/ApplicationService_Sync
 func main() {
+	shanghaiLC, _ := time.LoadLocation("Asia/Shanghai")
+	oTime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2024-02-29 12:00:00", shanghaiLC)
+	rTime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2023-02-19 11:45:03", shanghaiLC)
+	fmt.Println(oTime)
+	fmt.Println(rTime)
+	os.Exit(0)
+
+	str := "ppddwf-2021-05-20-1"
+	switch {
+	case regexp.MustCompile(`^dev.*`).MatchString(str):
+		fmt.Println("dev")
+	case regexp.MustCompile(`^(preprod|ppd).*`).MatchString(str):
+		fmt.Println("preprod|ppd")
+	case regexp.MustCompile(`^prod.*`).MatchString(str):
+		fmt.Println("prod")
+	default:
+		fmt.Println("default")
+	}
+	os.Exit(0)
+
+	abc := 7
+	def := 2
+	fmt.Println(5 / 2)
+	axx := int64(math.Floor(float64(abc / def)))
+	fmt.Println(axx)
+	return
+
+	//
+	pt := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	r := make(map[int64][]int64)
+	for _, v := range pt {
+		r[v] = append(r[v], v+1)
+		//if _, ok := r[v]; ok {
+		//	r[v] = append(r[v], v+1)
+		//} else {
+		//	r[v] = []int64{v + 1}
+		//}
+	}
+	fmt.Println(r)
+	return
+
+	fmt.Println("===========================")
+	fmt.Println(strings.TrimPrefix("987654321", "13456789"))
+	fmt.Println("===========================")
+
+	aMap := map[string]string{
+		"a": "b",
+	}
+	xbx := aMap["cbcdef"]
+	fmt.Println(xbx)
+
+	os.Exit(0)
+	type JSONResponse struct {
+		Message string `json:"message"`
+		Data    any    `json:"data"`
+	}
+
+	x := JSONResponse{
+		Message: "hello",
+		Data:    nil,
+	}
+	xx, _ := json.Marshal(x)
+	xxStr := string(xx)
+	fmt.Println(xxStr)
+	os.Exit(0)
+
 	var a []struct{}
 	xxx := T{
 		Id: a,
