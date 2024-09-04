@@ -14,9 +14,9 @@ import (
 func main() {
 	ctx := context.TODO()
 	var (
-		maxWorkers = runtime.GOMAXPROCS(0)
+		maxWorkers = runtime.GOMAXPROCS(20)
 		sem        = semaphore.NewWeighted(int64(maxWorkers)) // 设置最大并发数
-		out        = make([]int, 32)
+		out        = make([]int, 132)
 	)
 
 	for i := range out {

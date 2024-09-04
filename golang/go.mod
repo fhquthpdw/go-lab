@@ -14,7 +14,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/shopspring/decimal v1.2.0
 	go.uber.org/goleak v1.1.11
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	golang.org/x/sync v0.8.0
 	gopkg.in/launchdarkly/go-sdk-common.v2 v2.2.2
 	gopkg.in/launchdarkly/go-server-sdk.v5 v5.2.1
 )
@@ -55,11 +55,14 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	github.com/pion/example-webrtc-applications v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.0 // indirect
+	github.com/samber/lo v1.47.0 // indirect
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/net v0.1.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/ini.v1 v1.56.0 // indirect
 	gopkg.in/launchdarkly/go-jsonstream.v1 v1.0.0 // indirect
 	gopkg.in/launchdarkly/go-sdk-events.v1 v1.1.0 // indirect

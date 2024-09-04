@@ -9,34 +9,21 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/athena"
 	"github.com/aws/aws-sdk-go-v2/service/athena/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
-	"github.com/aws/smithy-go/logging"
 	"time"
 )
 
 // SESA uat account for test
 func main() {
-	region := "cn-northwest-1"
-	var logger logging.Logger
-	var optFns []func(*config.LoadOptions) error
-
-	optFns = append(optFns, config.WithRegion(region), config.WithLogger(logger))
-	awsCfg, err := config.LoadDefaultConfig(context.TODO(), optFns...)
+	awsCfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("cn-northwest-1"))
 	if err != nil {
 		panic("failed to load default config: " + err.Error())
 	}
-
-	//
-	accountId := "248598923617"
-	stsRoleName := "CrossAccountTerraformAccessRole"
 	stsSvc := sts.NewFromConfig(awsCfg)
-	stsRole := fmt.Sprintf("arn:aws-cn:iam::%s:role/%s", accountId, stsRoleName)
+	stsRole := fmt.Sprintf("arn:aws-cn:iam::%s:role/%s", "248598923617", "CrossAccountTerraformAccessRole")
 	credential := stscreds.NewAssumeRoleProvider(stsSvc, stsRole)
-
 	awsCfg.Credentials = aws.NewCredentialsCache(credential)
-
 	// Create service client value configured for credentials, from assumed role.
 	athenaClient := athena.NewFromConfig(awsCfg)
-	//
 
 	// build query
 	query := "select op, dmstimestamp, id, created_at, ext_id, corp_id, name, avatar from weiban.b_wecom_ppd_weiban_external_user where id > 0 limit 5"
